@@ -142,3 +142,52 @@ spec:
 ```
 
 - https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/
+
+## Label과 Selector
+
+- 디플로이먼트에서 spec에 selector 추가해줘야 함
+- 디플로이먼트는 동적으로 파드를 생성하기 때문에 그 파드들을 관리하기 위해 셀렉터 필요
+- selector에 matchLabels나 matchExpressions에 파드 레이블 키-밸류 쌍이나 규칙을 추가
+- 파드는 레이블 키-밸류 쌍을 여러개 가질 수 있음
+- selector는 template의 labels와 매칭되어야 함
+- matchExpressions 사용하면 조건에 맞는 레이블 선택 가능
+    - ex) `- {key: app, operattor: In, values [second-app, first-app]`
+- 명령적 방식에서는 `-l` 옵션으로 레이블 선택 가능
+    - ex) `kubectl delete deployments -l group=example`
+
+## Service 설정 파일 예제
+
+https://kubernetes.io/docs/concepts/services-networking/service/
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app.kubernetes.io/name: MyApp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+```
+
+- https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/
+
+- 서비스의 셀렉터는 디플로이먼트의 파드 셀렉터 사용하면 됨
+
+## 리소스 업데이트 및 삭제
+
+- 선언적 방식에서는 설정 파일 변경 후 `kubectl apply -f <파일이름>` 명령어 실행하면 바로 업데이트됨
+- `kubectl delete -f <파일이름>`로 해당 파일이 생성했던 리소스들을 삭제 가능
+
+## 다중 구성 파일 vs. 단일 구성 파일
+
+- 여러 구성 파일을 하나의 파일에서 `---`로 구분하면 하나로 합칠 수 있음
+
+## Liveness Probes
+
+- 쿠버네티스가 파드, 컨테이너 정상 여부 판단하는 방식 설정
+- spec에 container에 livenessProbe로 설정
+    - 요청 메서드(httpGet 등), 경로(path), 포트(port), 확인 빈도(periodSeconds), 초기 대기 시간(initialDelaySeconds) 등 설정 가능 
