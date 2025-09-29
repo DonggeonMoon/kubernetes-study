@@ -254,7 +254,16 @@ https://kubernetes.io/docs/concepts/storage/volumes/#volume-types
         - FileSystem
         - Block
     - accessMode
-        - ReadWriteOnce
-        - ReadOnlyMany
-        - ReadWriteMany
-- 
+        - ReadWriteOnce(하나의 노드에서만 읽기/쓰기 가능)
+        - ReadOnlyMany(여러 노드에서 읽기만 가능)
+        - ReadWriteMany(여러 노드에서 읽기/쓰기 가능)
+- 퍼시스턴트 볼륨 쓰려면 퍼시스턴스 볼륨 클레임(PVC) 필요
+
+### Persistence Volume Claim(PVC)
+
+- 정적 볼륨 프로비저닝: 특정 퍼시스턴스 볼륨 요구
+- 동적 볼륨 프로비저닝: 원하는 크기나 설정에 맞춰서 알아서 볼륨 선택
+- 구성 파일의 requests에 요구 사항 지정(용량 등)
+    - 디플로이먼트에서 PV 사용 시 구성파일에 persistenceVolumeClaim 키에 claimName 명시
+- 스토리지 클래스: 관리자에게 스토리지 관리 방법과 볼륨 구성 방법을 세부적으로 제어 할 수 있게 해줌
+  - 퍼시스턴스 볼륨 구성에 중요한 정보를 제공함
