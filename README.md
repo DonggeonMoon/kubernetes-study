@@ -293,6 +293,10 @@ https://kubernetes.io/docs/concepts/storage/volumes/#volume-types
 
 ### ConfigMap
 
+- 다른 파드의 컨테이너 사양이 동일한 환경 변수 사용할 수 있도록 파일로 관리
+- data 키에 키, 밸류 쌍 기입
+- 디플로이먼트 구성 파일에서 환경 변수 env 키에 value 대신 valueFrom.configMapKeyRef 키 사용하여 컨피그맵에서 값 가져올 수 있음
+
 ## 네트워킹
 
 ### 내부 통신
