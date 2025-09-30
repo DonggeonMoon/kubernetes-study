@@ -301,12 +301,23 @@ https://kubernetes.io/docs/concepts/storage/volumes/#volume-types
 
 ### 내부 통신
 
-- localhost
+- 파드 내부에서는 localhost 주소로 통신 가능
 
 ### 파드 간 통신
 
-- service 이름에서 '-'을 '_'로 치환 후 + '.' + namespace
+- 대문자 서비스명에서 -'을 '_'로 치환 + '_SERVICE_HOST' 환경 변수가 자동으로 등록됨
+    - ex) 서비스명이 auth-service -> AUTH_SERVICE_SERVICE_HOST
 
-### 파드간 통신에 DNS
+### 파드 간 통신에 DNS
+
+- CoreDNS: 클러스터 내부 도메인 네임
+- 서비스명에서 '-'을 '_'로 치환 후 + '.' + namespace
+    - ex) 서비스명이 auth-service, namespace 없음 -> auth-service.default
+- CoreDNS가 자동으로 도메인 생성
 
 ### nginx 리버스 프록시 사용하기
+
+- nginx 리버스 프록시: 요청을 다른 호스트, 다른 도메인으로 리디렉션
+- nginx 설정에 컨테이너 내부에서 사용할 수 있는 도메인 사용 가능
+    - ex) http://tasks-service.default
+- 쿠버네티스가 도메인 이름 자동 할당, 클러스터 관리 IP 주소로 변환 수행
