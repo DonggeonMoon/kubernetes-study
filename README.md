@@ -238,18 +238,20 @@ https://kubernetes.io/docs/concepts/storage/volumes/#volume-types
 - 다양한 클라우드 프로바이더와 사용 사례에 대해 더 많은 기본 유형을 추가하지 않기 위해 추가됨
 - 이 인터페이스를 활용하면 누구나 드라이버 솔루션 구축 가능
 
-### Persistence Volume(PV)
+### Persistent Volume(PV)
 
 - 키 데이터와 같이 장기 데이터
 - 애플리케이션 생성으로 손실되면 안되는 데이터를 위한 것
 - 단순한 독립 스토리지 그 이상
 - 파드로부터 볼륨을 분리하며 파드 수명 주기에서 완전히 벗어남
-- 퍼시스턴스 볼륨은 파드와 노드에 대한 독립성을 갖게 되며, 클러스터 관리자로서 이 볼륨이 구성되는 방식에 대한 완전한 권한 갖게 됨
+- 퍼시스턴트 볼륨은 파드와 노드에 대한 독립성을 갖게 되며, 클러스터 관리자로서 이 볼륨이 구성되는 방식에 대한 완전한 권한 갖게 됨
 - 각각의 파드와 각각의 디플로이먼트 구성 파일 등을 여러 번 구성할 필요 없음
     - 한 번 정의 후, 여러 파드에서 사용 가능
 - 파드와 독립적으로 볼륨 정의하고 중앙 위치에 저장
-- 여러 퍼시스턴스 유형 존재 - emptyDir, hostPath는 불가(hostPath는 싱글 노드 클러스터에서만 사용 가능)
+- 여러 퍼시스턴트 볼륨 유형 존재 - emptyDir, hostPath는 불가(hostPath는 싱글 노드 클러스터에서만 사용 가능)
 - 설정
+    - capacity
+        - storage
     - volumeMode
         - FileSystem
         - Block
@@ -257,13 +259,50 @@ https://kubernetes.io/docs/concepts/storage/volumes/#volume-types
         - ReadWriteOnce(하나의 노드에서만 읽기/쓰기 가능)
         - ReadOnlyMany(여러 노드에서 읽기만 가능)
         - ReadWriteMany(여러 노드에서 읽기/쓰기 가능)
-- 퍼시스턴트 볼륨 쓰려면 퍼시스턴스 볼륨 클레임(PVC) 필요
 
-### Persistence Volume Claim(PVC)
+### Persistent Volume Claim(PVC)
 
-- 정적 볼륨 프로비저닝: 특정 퍼시스턴스 볼륨 요구
+- 퍼시스턴트 볼륨 쓰려면 퍼시스턴트 볼륨 클레임(PVC) 필요
+- 정적 볼륨 프로비저닝: 특정 퍼시스턴트 볼륨 요구
+    - volumeName으로 간단히 지정 가능
 - 동적 볼륨 프로비저닝: 원하는 크기나 설정에 맞춰서 알아서 볼륨 선택
+- accessModes 지정 필요
 - 구성 파일의 requests에 요구 사항 지정(용량 등)
-    - 디플로이먼트에서 PV 사용 시 구성파일에 persistenceVolumeClaim 키에 claimName 명시
-- 스토리지 클래스: 관리자에게 스토리지 관리 방법과 볼륨 구성 방법을 세부적으로 제어 할 수 있게 해줌
-  - 퍼시스턴스 볼륨 구성에 중요한 정보를 제공함
+    - 디플로이먼트에서 PV 사용 시 구성 파일에 persistentVolumeClaim 키에 claimName 명시
+- 스토리지 클래스: 관리자에게 스토리지 관리 방법과 볼륨 구성 방법을 세부적으로 제어할 수 있게 해줌
+    - 퍼시스턴트 볼륨 구성에 중요한 정보를 제공함
+    - 퍼시스턴스 볼륨 spec에 storageClassName을 지정
+
+### Volume vs. Persistent Volume
+
+- 일반 볼륨
+    - 일반 볼륨은 파드에 연결되며, 파드와 생명 주기를 함께 함
+        - emptyDir은 재생성 시 빈 상태로 시작
+        - hostPath나 다른 클라우드 프로바이더 유형은 데이터가 손실되지 않음
+    - 파드와 동일한 파일에 구성이 정의됨
+    - 파드 수가 많아지면 작업이 반복적이고 전역 수준에서 관리가 어려울 수 있음
+- 영구 볼륨
+    - 스탠드얼론 리소스(파드에 연결되지 않음)
+    - PVC로 요구되며 스탠드얼론으로 생성됨
+    - 한 번만 정의하면 여러 번 사용 가능
+
+### 환경 변수
+
+- 프로그래밍 언어에서 지원하는 방식으로 환경 변수 지정 후 구성 파일 내에서 env 키에 name, value 추가
+    - Node.js라면 process.env.환경변수명으로 값 대체
+
+### ConfigMap
+
+## 네트워킹
+
+### 내부 통신
+
+- localhost
+
+### 파드 간 통신
+
+- service 이름에서 '-'을 '_'로 치환 후 + '.' + namespace
+
+### 파드간 통신에 DNS
+
+### nginx 리버스 프록시 사용하기
